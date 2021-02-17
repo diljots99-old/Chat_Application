@@ -1,0 +1,18 @@
+﻿@model Chat_Application.Models.User
+@{
+    ViewData["Title"] = "Create_Account";
+}
+
+<h1>Create_Account</h1>
+
+<form method="POST" action=@Url.ActionLink("Create_Account","Home")>
+
+    @Html.AntiForgeryToken()
+    <input class="w-75 m-2 justify-content-center  align-items-center" type="text" placeholder="First Name" name="First_Name" id="First_Name" />
+    <input class="w-75 m-2 justify-content-center  align-items-center" type="text" placeholder="Last Name" name="Last_Name" id="Last_Name" />
+    <input class="w-75 m-2 justify-content-center  align-items-center" type="text" placeholder="Username" name="username" id="username" />
+
+    <button class="w-50 m-2 justify-content-center align-items-center" type="submit" id="sendButton">Create Account</button>
+
+
+</form>

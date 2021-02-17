@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="text-center">
+    
+    <div class="container h-100 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+        <form method="POST" class="w-50 m-2 justify-content-center align-items-center" action=@Url.ActionLink("Index","Home")>
+            <input class="w-100 m-2 justify-content-center  align-items-center" type="text" placeholder="Please Enter Your username" id="username" name="username"/>
+            <button class="w-100 m-2 justify-content-center align-items-center" type="submit" id="sendButton">Log in</button>
+        </form>
+        <a class="w-50 m-2 justify-content-center align-items-center" href=@Url.ActionLink("Create_Account","Home")><button class="w-100" id="CreateAccount">Create Account </button></a>
+
+    </div>
+
+</div>

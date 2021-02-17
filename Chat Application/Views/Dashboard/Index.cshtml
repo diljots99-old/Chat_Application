@@ -1,0 +1,132 @@
+﻿@model Chat_Application.Models.DashboadViewModel
+@{
+    ViewData["Title"] = "Home Page";
+
+    User user = Model.user;
+    List<Conversation> conversations = Model.listOfConversation;
+    Conversation selectedConversation = Model.selectedConverstaion;
+
+
+}   
+
+    Welcome,  @Html.DisplayFor(modelItem => user.username)
+
+
+
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container bootstrap snippets bootdey">
+    <div class="row vh-100 ">
+        <div class="col-md-4 bg-white ">
+            <div class=" row border-bottom padding-sm" style="height: 40px;">
+                Member
+            </div>
+
+            <!-- =============================================================== -->
+            <!-- member list -->
+            <ul class="friend-list">
+                @foreach (var conversation in conversations)
+                {
+                    string friendName = "";
+                    List<Message> messages = conversation.Messages.FindAll(Message => true).ToList();
+
+                    foreach (var participant in conversation.Participants.FindAll(User => true).ToList())
+                    {
+
+                        if (participant.username != user.username)
+                        {
+                            friendName = participant.username + ",";
+                        }
+
+                    }
+                    <li  class="@Html.Raw((selectedConversation == conversation) ? "active bounceInDown" : "")" >
+                        <form  method="post" class="input-group" action=@Url.ActionLink("Index", "Dashboard")>
+
+                            <input type="hidden" id="conversationId" name="conversationId" value=@conversation.Id>
+                            <input type="hidden" id="currentUserId" name="currentUserId" value=@user.Id>
+
+                            <button type="submit" class="clearfix">
+                                <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
+                                <div class="friend-name">
+                                    <strong> @friendName </strong>
+                                </div>
+                                <div class="last-message text-muted">@messages[0].messageContent</div>
+                                <small class="time text-muted">@Html.Raw((messages[0].messageDelivered <= DateTime.UtcNow.AddMinutes(-1)) ? messages[0].messageSent.ToShortDateString() : "Just Now")</small>
+                                <small class="chat-alert text-muted"><i class="fa fa-check"></i></small>
+                            </button>
+                        </form>
+                           
+                    </li>
+                }
+                                              
+            </ul>
+    
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn w-100 btn-success no-rounded" data-toggle="modal" data-target="#exampleModalCenter">
+                New Conversation
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                                 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--=========================================================-->
+        <!-- selected chat -->
+        <div class="col-md-8 bg-white  " >
+            <div class="chat-message vh-95">
+                         
+                @foreach (var participant in selectedConversation.Participants ){
+                    if(user.username != participant.username)   
+                    {
+                        <h1>@participant.username </h1>
+                    }
+
+                }
+                <ul id="chat" class="chat">
+                    @{ foreach (var message in selectedConversation.Messages ){
+                           <li class="@Html.Raw((user.username == message.Sender.username ) ? "right clearfix" : "left clearfix")">
+                                                          
+                                    
+                               <span class="@Html.Raw((user == message.Sender ) ? "chat-img pull-right" : "chat-img pull-left")">
+                                   <img src="https://bootdey.com/img/Content/user_1.jpg" alt="User Avatar">
+                               </span>
+                               <div class="chat-body clearfix">
+                                   <div class="header">
+                                       <strong class="primary-font">@message.Sender.username</strong>
+                                       <small class="pull-right text-muted"><i class="fa fa-clock-o"></i> @message.messageDelivered</small>
+                                   </div>
+                                   <p>
+                                       @message.messageContent
+                                               
+                                   </p>
+                               </div>
+                           </li>
+                       }
+                    }
+                </ul>
+            </div>
+            <div class="chat-box bg-white">
+                <div class="input-group">
+                    <form method="post" class="input-group" action=@Url.ActionLink("Send_Message", "Dashboard")>
+                        <input type="hidden" id="currentconversationId" name="currentconversationId" value=@selectedConversation.Id>
+                        <input type="hidden" id="currentUserId" name="currentUserId" value=@user.Id>
+                        <input class="form-control border no-shadow no-rounded" placeholder="Type your message here" id="messageContent"name="messageContent">
+                        <span class="input-group-btn">
+                            <button class="btn btn-success no-rounded" type="submit" name="sendButton" id="sendButton">Send</button>
+                        </span>
+                    </form>
+                </div><!-- /input-group -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
