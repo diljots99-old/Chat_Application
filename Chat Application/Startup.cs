@@ -14,6 +14,7 @@ using Chat_Application.Services;
 using Chat_Application.SocketsManger;
 using Chat_Application.Handlers;
 using Chat_Application.Hubs;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat_Application
 {
@@ -37,6 +38,9 @@ namespace Chat_Application
                 services.AddSingleton<IDatabaseSettings>(sp =>
                     sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
+                services.AddDbContext<DatabaseContext>();
+
+
             services.AddSingleton<ConversationService>();
             services.AddSingleton<UserService>();
 
@@ -47,6 +51,8 @@ namespace Chat_Application
 
             services.AddWebSocketManger();
             services.AddControllers();
+
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +61,7 @@ namespace Chat_Application
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -64,12 +71,14 @@ namespace Chat_Application
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
             app.UseWebSockets();
 
             app.MapSockets("/ws", serviceProvider.GetService<WebSocketMessageHandler>());
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -83,7 +92,7 @@ namespace Chat_Application
                     pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 
                 endpoints.MapHub<ChatHub>("/chathub");
-
+                endpoints.MapRazorPages();
 
             });
 

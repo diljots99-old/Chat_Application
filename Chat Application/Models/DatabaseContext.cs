@@ -13,7 +13,7 @@ namespace Chat_Application.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("Data Source=blogging.db");
+            options.UseSqlite("Data Source=chat.db");
           
          }
 }

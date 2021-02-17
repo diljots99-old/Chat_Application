@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat_Application.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210212223609_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210217213447_MyFirstMigration")]
+    partial class MyFirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,13 +37,13 @@ namespace Chat_Application.Migrations
                     b.Property<string>("ConversationId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("SenderId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("messageContent")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("messageDelivered")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("messageSeen")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("messageSent")
@@ -52,6 +52,8 @@ namespace Chat_Application.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Message");
                 });
@@ -85,6 +87,12 @@ namespace Chat_Application.Migrations
                     b.HasOne("Chat_Application.Models.Conversation", null)
                         .WithMany("Messages")
                         .HasForeignKey("ConversationId");
+
+                    b.HasOne("Chat_Application.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Chat_Application.Models.User", b =>
