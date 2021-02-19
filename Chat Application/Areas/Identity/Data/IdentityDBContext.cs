@@ -11,11 +11,21 @@ namespace Chat_Application.Data
 {
     public class IdentityDBContext : IdentityDbContext<ChatApplicationUser>
     {
-        public IdentityDBContext(DbContextOptions<IdentityDBContext> options)
-            : base(options)
-        {
-        }
+        //public IdentityDBContext(DbContextOptions<IdentityDBContext> options)
+        //    : base(options)
+        //{
+        //}
 
+
+        public DbSet<ChatApplicationUser> ChatApplicationUsers { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            //options.UseSqlite("Data Source=chat.db");
+               options.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\diljo\\source\\repos\\Chat Application\\Database\\DataBB.mdf\";Integrated Security=True;Connect Timeout=30");
+
+
+        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

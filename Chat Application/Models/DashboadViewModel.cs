@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Chat_Application.Areas.Identity.Data;
 
 namespace Chat_Application.Models
 {
@@ -11,5 +12,6 @@ namespace Chat_Application.Models
         public Conversation selectedConverstaion { get; set; }
         
         public User user { get; set; }
+        public DatabaseContext databaseContext { get; set; }
     }
 }

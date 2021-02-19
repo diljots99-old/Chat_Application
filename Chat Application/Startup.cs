@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Chat_Application.Models;
 using Microsoft.Extensions.Options;
-using Chat_Application.Services;
 using Chat_Application.SocketsManger;
 using Chat_Application.Handlers;
 using Chat_Application.Hubs;
@@ -41,9 +40,7 @@ namespace Chat_Application
                 services.AddDbContext<DatabaseContext>();
 
 
-            services.AddSingleton<ConversationService>();
-            services.AddSingleton<UserService>();
-
+          
             services.AddSignalR();
 
             services.AddControllersWithViews();

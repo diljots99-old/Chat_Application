@@ -16,10 +16,11 @@ namespace Chat_Application.Areas.Identity
         public void Configure(IWebHostBuilder builder)
         {
             builder.ConfigureServices((context, services) => {
-                services.AddDbContext<IdentityDBContext>(options =>
-                    options.UseSqlite(
-                        context.Configuration.GetConnectionString("IdentityDBContextConnection")));
+                //services.AddDbContext<IdentityDBContext>(options =>
+                //    options.UseSqlite(
+                //        context.Configuration.GetConnectionString("IdentityDBContextConnection")));
 
+                services.AddDbContext<IdentityDBContext>();
                 services.AddDefaultIdentity<ChatApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<IdentityDBContext>();
             });

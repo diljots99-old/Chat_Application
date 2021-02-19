@@ -2,38 +2,54 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Chat_Application.Areas.Identity.Data;
 using Chat_Application.Models;
-using Chat_Application.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Chat_Application.Hubs
 {
     public class ChatHub : Hub
     {
-        private readonly ConversationService _conversationService;
-        private readonly UserService _userService;
-
-        public ChatHub(ConversationService conversationService, UserService userService)
+        private readonly UserManager<ChatApplicationUser> _userManager;
+        public ChatHub(UserManager<ChatApplicationUser> userManager)
         {
-            _conversationService = conversationService;
-            _userService = userService;
+            _userManager = userManager;
         }
 
 
-        public  async Task SendMessage(string conversationId, string userId,string messageContent)
+
+        public async Task SendMessage(string conversationId, string userId,string messageContent)
         {
-            User user = _userService.Get(userId);
-            Conversation conversation = _conversationService.Get(conversationId);
+            DatabaseContext dbContext = new DatabaseContext();
+            User user = dbContext.Users.Find(userId);
+            Conversation conversation = dbContext.Conversations.Include(c => c.Participants).ThenInclude(p => p.User)
+                .Where(c => c.Id == conversationId).FirstOrDefault();
+
+            List<string> usersList = new List<string>();
+            foreach (var participant in conversation.Participants)
+            {
+                usersList.Add(participant.User.Id);   
+            }
+
+            Messages newMessage = new Messages() { messageContent = messageContent, Sender = user, Conversation = conversation, messageSent = DateTime.Now, messageDelivered = DateTime.Now };
 
             if (!string.IsNullOrEmpty(messageContent))
             {
-                Message newMessage = new Message() { messageContent = messageContent, Sender = user, messageSent = DateTime.UtcNow, messageDelivered = DateTime.UtcNow };
+                
+                dbContext.Messages.Add(newMessage);
 
-                conversation.Messages.Add(newMessage);
+                dbContext.SaveChanges();
 
-                _conversationService.Update(conversation.Id, conversation);
             }
-            await Clients.All.SendAsync("ReceiveMessage",  conversationId, userId,messageContent);
+
+            string data = JsonConvert.SerializeObject(new { messageContent = messageContent,senderName = newMessage.Sender.First_Name,messageSent=newMessage.messageSent.ToLongDateString()});
+            await Clients.Users(usersList).SendAsync("ReceiveMessage", conversationId, userId, data);
+
         }
     }
 }
